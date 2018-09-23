@@ -140,7 +140,7 @@ class Handler
         {
             $list = $this->s3->getBucket('django-balti');
             //$list = $list['body']['Contents'];
-            $filteredLst = array();
+            $filteredList = array();
             foreach ($list as $key => $value)
             {
                 $breakKey = explode('.', $key);
