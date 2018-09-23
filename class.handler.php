@@ -151,12 +151,12 @@ class Handler
                     $filteredList[] = array('key' => $key, 'value' => $value, 'extension' => $extension);
                 }
             }
-            $list = $filteredList;
+            $params['list'] = $filteredList;
         }
         $localFile = '';
-        if (!file_exists($list[$params['index']]['key']))
+        if (!file_exists($params['list'][$params['index']]['key']))
         {
-            $folders = explode('/', $list[$params['index']]['key']);
+            $folders = explode('/', $params['list'][$params['index']]['key']);
             /*for ($i = 0; $i < count($folders)-1; $i++)
             {
                 mk_dir($folders[$i], 0655);
