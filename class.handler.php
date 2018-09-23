@@ -44,6 +44,9 @@ class Handler
                 }
                 $return = $this->sendImage($downloadArray);//['index'], $this->params['list']);
                 break;
+            case 'cleanup':
+                $return = $this->cleanUp($this->params['images']);//['index'], $this->params['list']);
+                break;
             default: $return = array('success' => false, message => 'Unauthorized operation.');
         }
         return $return;
@@ -141,6 +144,7 @@ class Handler
             $list = $this->s3->getBucket('django-balti');
             //$list = $list['body']['Contents'];
             $filteredList = array();
+            $images = array();
             foreach ($list as $key => $value)
             {
                 $breakKey = explode('.', $key);
@@ -154,9 +158,9 @@ class Handler
             $params['list'] = $filteredList;
         }
         $localFile = '';
-        if (!file_exists($params['list'][$params['index']]['key']))
-        {
-            $folders = explode('/', $params['list'][$params['index']]['key']);
+        //if (!file_exists($params['list'][$params['index']]['key']))
+        //{
+            //$folders = explode('/', $params['list'][$params['index']]['key']);
             /*for ($i = 0; $i < count($folders)-1; $i++)
             {
                 mk_dir($folders[$i], 0655);
@@ -166,7 +170,12 @@ class Handler
                     $localFile .= DIRECTORY_SEPARATOR;
                 }
             }*/
-            $localFile .= $folders[(count($folders)-1)];
+            //$localFile .= $folders[(count($folders)-1)];
+        for ($i = 0; $i < count($params['list']); $i++)
+        {
+            $folders = explode('/', $params['list'][$i]['key']);
+            $images[] =  $folders[(count($folders)-1)];
+        }
             /*$newImage = imagecreatetruecolor('200', '200');
             file_put_contents($list[$params['index']]['key'], $newImage);
             $check = false;
@@ -191,27 +200,41 @@ class Handler
             {
                 return array('success' => 0, 'message' => 'Failed to create placeholder file');
             }*/
+        //}
+        for ($i = 0; $i < count($images); $i++)
+        {
+            $fileHandle = fopen($images[$i], 'wb');
+            $file = $this->s3->getObject('django-balti', $params['list'][$i]['key'], $fileHandle);//$params['list'][$params['index']]['key'], $fileHandle);//fopen($localFile, 'wb'));//, fopen($list$params['index']->Key, 'wb'));
         }
-        $fileHandle = fopen($localFile, 'wb');
-        $file = $this->s3->getObject('django-balti', $list[$params['index']]['key'], $fileHandle);//fopen($localFile, 'wb'));//, fopen($list$params['index']->Key, 'wb'));
         //fclose($fileHandle);
-        $base64 = 'data:image/'.$list[$params['index']]['extension'].';base64,'.base64_encode(file_get_contents($localFile));
-        unlink($localFile);
+        //$base64 = 'data:image/'.$params['list'][$params['index']]['extension'].';base64,'.base64_encode(file_get_contents($localFile));
+        $base = $_SERVER['SERVER_NAME'].'/cc-images/';//.$localFile;
+        //unlink($localFile);
 	//$this->s3->copyObject('django-balti', 'django-balti'.'/'.$list[$params['index']]['key'], '', $list[$params['index']]['key'], S3::ACL_PRIVATE);
         //get the file contents and turn them into base64 notation
 	//$data = file_get_contents($file);
 	//$base64 = 'data:image/'.$pathParts['extension'].';base64,'.base64_encode($data);
         
         //increase the index value for the next download
-        $params['index']++;
+        //$params['index']++;
 
 	return array(
-                        'base64' => $base64,
+                        'base' => $base,
+                        'images' => $images//$params['list'][0]['key'],
                         //'name' => $pathParts['filename'],
                         //'extension' => $pathParts['extension'],
-                        'index' => $params['index'],
-                        'list' => $list,//count($files),
-                        'file' => $file
+                        //'index' => $params['index'],
+                        //'list' => $params['list'],//count($files),
+                        //'file' => $file
                     );
+    }
+    
+    private function cleanUp($images)
+    {
+        for ($i = 0; $i < count($images); $i++)
+        {
+            unlink($images[$i]);
+        }
+        return array('success' => 1, 'message' => 'All images cleared from the server');
     }
 }
