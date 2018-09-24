@@ -139,8 +139,8 @@ class Handler
         //$path .= DIRECTORY_SEPARATOR.$files[$index];
 	//get the parts to download the name and extension
 	//$pathParts = pathinfo($path);
-        //if (!isset($params['list']))
-        //{
+        if (!isset($params['list']))
+        {
             $list = $this->s3->getBucket('django-balti');
             //$list = $list['body']['Contents'];
             $filteredList = array();
@@ -156,7 +156,7 @@ class Handler
                 }
             }
             $params['list'] = $filteredList;
-        //}
+        }
         $localFile = '';
         //if (!file_exists($params['list'][$params['index']]['key']))
         //{
