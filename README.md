@@ -1,4 +1,4 @@
-cc-images
+*AWS IMAGES BACKUP ON CLOUD*
 the project idea was taken form the concept of Google Photos. Like in Google Photos one can automatically upload the images for the purpose of backup.and can retrieve them when needed.
 the front-end was made on a Python framework called kivi.
 the backend was made in php that is actually an API.
