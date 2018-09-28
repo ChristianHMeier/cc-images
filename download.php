@@ -3,7 +3,7 @@
 include './class.handler.php';
 
 //initialize the class with the download parameters
-$downloadArray = array('mode' => 'download', 'index' => $_POST['index']);
+$downloadArray = array('mode' => 'download', 'index' => 0);//$_POST['index']);
 if (isset($_POST['list']))
 {
     $downloadArray['list'] = $_POST['list'];
